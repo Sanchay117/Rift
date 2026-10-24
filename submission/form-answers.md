@@ -13,4 +13,6 @@ Rift tests whether an options-flow headline depends on one contract or expiry. I
 
 ## Publication gate
 
-Currently private and unsubmitted. Review the native evidence, publish free with visible source and #TSBuild26, verify the public listing, then let the user complete the category-two form. No GitHub repository or demo-video field was present in the previously verified submission form. Publication and the form are separate steps.
+Published on October 25, 2026, free with visible source and #TSBuild26. Store URL: https://trendspider.com/trading-tools-store/indicators/6add16-rift-options-flow-stress-test/
+
+The publisher confirmed publication, but the public URL still shows pending moderation. Wait for the live listing or obtain organizer guidance before confirming public availability. Copy the exact live Store heading once it is approved. The user completes the separate category-two form; it has not been submitted. No GitHub repository or demo-video field was present in the previously verified submission form. Publication and the form are separate steps.

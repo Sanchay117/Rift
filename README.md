@@ -2,7 +2,7 @@
 
 **Does the options-flow headline survive losing one contract?** Rift audits concentration in the provider-selected unusual-options sample. It groups reports by contract or expiry, omits each group separately, and shows how far the provider-tagged premium balance can move.
 
-Built for **Most Unique Options Indicator**: Options Insight 60%, Execution 40%. Original implementation; MIT; #TSBuild26. **Saved privately in TrendSpider; not published or submitted.** No additional OPRA subscription is required by this build: the current account's included `request.unusual_options` endpoint was verified on five stocks. Full-chain APIs returned `not_entitled` and are not used by the production adapter.
+Built for **Most Unique Options Indicator**: Options Insight 60%, Execution 40%. Original implementation; MIT; #TSBuild26. **Published free with visible source on October 25, 2026; pending Store moderation. The hackathon form has not been submitted.** [Store listing](https://trendspider.com/trading-tools-store/indicators/6add16-rift-options-flow-stress-test/). No additional OPRA subscription is required by this build: the current account's included `request.unusual_options` endpoint was verified on five stocks. Full-chain APIs returned `not_entitled` and are not used by the production adapter.
 
 ## Open and reproduce
 
@@ -10,6 +10,7 @@ Built for **Most Unique Options Indicator**: Options Insight 60%, Execution 40%.
 - Local preview: `npm run preview`, then http://127.0.0.1:8768/preview/.
 - Run `npm run build`, `npm test`, `npm run qa`. Node 20+ and Python 3; no npm dependencies or credentials.
 - Native evidence and scope: [review/NATIVE-QA.md](review/NATIVE-QA.md). Independent review: [review/INDEPENDENT-REVIEW.md](review/INDEPENDENT-REVIEW.md).
+- Publication evidence and current gate: [review/PUBLICATION.md](review/PUBLICATION.md).
 - Numerical audit: [review/validation.json](review/validation.json).
 - Submission copy: [submission/store-description.md](submission/store-description.md) and [submission/form-answers.md](submission/form-answers.md).
 

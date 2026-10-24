@@ -15,4 +15,4 @@ Three latest-bar conditions are included for scanner experimentation. Batch-scan
 Ink/Paper palettes and Compact/Full layouts. Uses the included unusual-options endpoint verified on the development account; no full-chain OPRA request is made. Free and open source under MIT. Built for Most Unique Options Indicator. No price forecast or buy/sell recommendation. #TSBuild26
 
 ---
-Draft; not published. The paragraph above this rule ends the Store description.
+Published on October 25, 2026, free with visible source; pending Store moderation. The paragraph above this rule ends the Store description. Store URL: https://trendspider.com/trading-tools-store/indicators/6add16-rift-options-flow-stress-test/

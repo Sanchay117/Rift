@@ -14,7 +14,7 @@ An older private QA copy is retained under the distinct name **Rift - Native QA 
 | NVDA, Ink/Compact/Contract, v1.1 | +12.4 pp baseline; +6.4…+15.6 pp range; 3 / 87 omissions remove the +10 pp material lead. TOP, LOW* and HIGH rows are visible, including the 220 call expiring November 20 at +6.4 pp without that contract. | `screenshots/native-nvda-contract.png` |
 | NVDA, Paper/Full/Expiry, v1.1 | Same +12.4 pp baseline and $11.91M accepted premium. +8.1…+20.4 pp range; 2 / 19 expiry omissions change the lead. TOP/HIGH, LOW* and remaining impact rows render clearly with the role legend. | `screenshots/native-nvda-paper-expiry.png` |
 
-The native omission ruler and sample tick were visually checked. Both palettes were tested on the current dark price-chart background. A complete native light-chart background switch was not tested. Full and Compact fit the normal chart panel; an actual Store publication preview has not been configured yet.
+The native omission ruler and sample tick were visually checked. Both palettes were tested on the current dark price-chart background. A complete native light-chart background switch was not tested. Full and Compact fit the normal chart panel. On October 25, the actual Store preview was configured and applied in Ink/Compact/Contract on NVDA. Its saved appearance uses x36/y56 to fit the complete footer; the source default remains x36/y88. The chart-key header and market-price line were hidden in the preview, and price history was panned into view. The title, decisive LOW* contract, both endpoints and every explanatory footer line fit. Evidence: `screenshots/store-preview.png`.
 
 ## Native scanner
 
@@ -36,4 +36,4 @@ The companion is saved privately as **Rift - Current Sample Dependence**, with n
 
 All conclusions apply to the returned provider-selected sample, which can be truncated. The default 7-day window is a filter, not a promise that seven days of activity were returned. Event age is visible. Source tags do not establish initiator, intent, opening/closing, net capital flow or related multi-leg orders. Contract counts and premium-equivalent breadth do not count independent traders. This is not full-chain analysis, a forecast, current open interest or a historical trading strategy.
 
-**Private and unsubmitted.** Store description and category-two form copy are prepared. Native Store preview, public/free/visible-source publication and public-listing verification remain before the user's separate submission form.
+**Published to Store moderation on October 25; hackathon form unsubmitted.** Free access and visible source were selected. The publisher confirmed publication and source visibility, and the resulting public URL showed pending moderation. See `PUBLICATION.md`. Public-listing approval remains before confirming public availability on the user's separate form.
