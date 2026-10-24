@@ -1,0 +1,11 @@
+import fs from 'node:fs/promises';import crypto from 'node:crypto';
+const root=new URL('../',import.meta.url);
+const parts=await Promise.all(['engine','presentation','trendspider'].map(n=>fs.readFile(new URL('src/'+n+'.js',root),'utf8')));
+if(/\bnew\s+[A-Za-z_$]|\.prototype\b/.test(parts.join('\n')))throw Error('Native constructor/prototype restriction');
+const source='/* Rift - Options Flow Stress Test | MIT | #TSBuild26\n * Audits the returned unusual-options sample. No forecast or historical backtest.\n */\n\n'+parts.join('\n\n');
+await fs.mkdir(new URL('dist/',root),{recursive:true});
+await fs.writeFile(new URL('dist/rift.trendspider.js',root),source);
+await fs.writeFile(new URL('dist/rift.browser.js',root),parts.slice(0,2).join('\n\n')+'\nexport {calculateRift,buildRiftOverlay};\n');
+const p=JSON.parse(await fs.readFile(new URL('package.json',root),'utf8'));
+await fs.writeFile(new URL('dist/build.json',root),JSON.stringify({version:p.version,bytes:Buffer.byteLength(source),sha256:crypto.createHash('sha256').update(source).digest('hex')},null,2)+'\n');
+console.log('Built '+Buffer.byteLength(source)+' bytes');

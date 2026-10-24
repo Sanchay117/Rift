@@ -1,0 +1,238 @@
+{
+  "checkedOn": "2026-10-24",
+  "scope": "Provider-selected, potentially truncated unusual-options samples. Not whole-market flow.",
+  "results": [
+    {
+      "ticker": "AAPL",
+      "grouping": "Contract",
+      "status": "NO BASE LEAD · OMISSION CREATES ONE",
+      "ready": true,
+      "returned": 200,
+      "accepted": 200,
+      "groups": 110,
+      "balance": 0.07223459303697721,
+      "omissionRange": [
+        0.03961902441314675,
+        0.10670317308869047
+      ],
+      "pivotal": 1,
+      "topShare": 0.13442752213961923,
+      "effective": 24.018290150594655,
+      "tagShare": 0.7406185075878039,
+      "newestEvent": "2026-10-23T19:58:00.000Z",
+      "asOf": "2026-10-24T14:43:04.200Z"
+    },
+    {
+      "ticker": "AAPL",
+      "grouping": "Expiry",
+      "status": "NO BASE LEAD · OMISSION CREATES ONE",
+      "ready": true,
+      "returned": 200,
+      "accepted": 200,
+      "groups": 22,
+      "balance": 0.07223459303697721,
+      "omissionRange": [
+        0.0004821172202066807,
+        0.10326836601266713
+      ],
+      "pivotal": 2,
+      "topShare": 0.2813367993749333,
+      "effective": 6.820317467088774,
+      "tagShare": 0.7406185075878039,
+      "newestEvent": "2026-10-23T19:58:00.000Z",
+      "asOf": "2026-10-24T14:43:04.200Z"
+    },
+    {
+      "ticker": "CVX",
+      "grouping": "Contract",
+      "status": "NO BASE LEAD · OMISSION CREATES ONE",
+      "ready": true,
+      "returned": 200,
+      "accepted": 200,
+      "groups": 92,
+      "balance": -0.030558837214814904,
+      "omissionRange": [
+        -0.10285728674286362,
+        0.03717127178864917
+      ],
+      "pivotal": 1,
+      "topShare": 0.07497555501657797,
+      "effective": 32.44421412584954,
+      "tagShare": 0.8594265412893431,
+      "newestEvent": "2026-10-23T19:52:00.000Z",
+      "asOf": "2026-10-24T05:45:47.288Z"
+    },
+    {
+      "ticker": "CVX",
+      "grouping": "Expiry",
+      "status": "NO BASE LEAD · OMISSION CREATES ONE",
+      "ready": true,
+      "returned": 200,
+      "accepted": 200,
+      "groups": 13,
+      "balance": -0.030558837214814904,
+      "omissionRange": [
+        -0.14102040415445818,
+        0.04744994488922566
+      ],
+      "pivotal": 1,
+      "topShare": 0.23292029616879042,
+      "effective": 6.700266312203244,
+      "tagShare": 0.8594265412893431,
+      "newestEvent": "2026-10-23T19:52:00.000Z",
+      "asOf": "2026-10-24T05:45:47.288Z"
+    },
+    {
+      "ticker": "JPM",
+      "grouping": "Contract",
+      "status": "NO MATERIAL TAGGED LEAD",
+      "ready": true,
+      "returned": 200,
+      "accepted": 200,
+      "groups": 110,
+      "balance": 0.03276854214438957,
+      "omissionRange": [
+        -0.017206250174089024,
+        0.0813645810352831
+      ],
+      "pivotal": 0,
+      "topShare": 0.12139386231133466,
+      "effective": 28.92366469146578,
+      "tagShare": 0.7321104899958344,
+      "newestEvent": "2026-10-23T19:57:00.000Z",
+      "asOf": "2026-10-24T14:43:05.068Z"
+    },
+    {
+      "ticker": "JPM",
+      "grouping": "Expiry",
+      "status": "NO MATERIAL TAGGED LEAD",
+      "ready": true,
+      "returned": 200,
+      "accepted": 200,
+      "groups": 15,
+      "balance": 0.03276854214438957,
+      "omissionRange": [
+        -0.018440690428690863,
+        0.07752760610497829
+      ],
+      "pivotal": 0,
+      "topShare": 0.17999020756177359,
+      "effective": 9.916482194202134,
+      "tagShare": 0.7321104899958344,
+      "newestEvent": "2026-10-23T19:57:00.000Z",
+      "asOf": "2026-10-24T14:43:05.068Z"
+    },
+    {
+      "ticker": "NVDA",
+      "grouping": "Contract",
+      "status": "TAGGED LEAD CAN DISSOLVE",
+      "ready": true,
+      "returned": 200,
+      "accepted": 200,
+      "groups": 87,
+      "balance": 0.12431412656917981,
+      "omissionRange": [
+        0.06448089119208479,
+        0.15551574014002337
+      ],
+      "pivotal": 3,
+      "topShare": 0.11087011418228417,
+      "effective": 27.715306442564405,
+      "tagShare": 0.9005816480304947,
+      "newestEvent": "2026-10-23T19:59:00.000Z",
+      "asOf": "2026-10-24T14:43:04.791Z"
+    },
+    {
+      "ticker": "NVDA",
+      "grouping": "Expiry",
+      "status": "TAGGED LEAD CAN DISSOLVE",
+      "ready": true,
+      "returned": 200,
+      "accepted": 200,
+      "groups": 19,
+      "balance": 0.12431412656917981,
+      "omissionRange": [
+        0.08143430566826086,
+        0.2044994223818445
+      ],
+      "pivotal": 2,
+      "topShare": 0.26296808735610333,
+      "effective": 6.80669084505804,
+      "tagShare": 0.9005816480304947,
+      "newestEvent": "2026-10-23T19:59:00.000Z",
+      "asOf": "2026-10-24T14:43:04.791Z"
+    },
+    {
+      "ticker": "TSLA",
+      "grouping": "Contract",
+      "status": "NO BASE LEAD · OMISSION CREATES ONE",
+      "ready": true,
+      "returned": 200,
+      "accepted": 200,
+      "groups": 67,
+      "balance": 0.011866612056235591,
+      "omissionRange": [
+        -0.06651084881694755,
+        0.16131197132270775
+      ],
+      "pivotal": 1,
+      "topShare": 0.1348663375711734,
+      "effective": 18.896589599813847,
+      "tagShare": 0.8222131360346566,
+      "newestEvent": "2026-10-23T20:08:00.000Z",
+      "asOf": "2026-10-24T14:43:04.498Z"
+    },
+    {
+      "ticker": "TSLA",
+      "grouping": "Expiry",
+      "status": "NO BASE LEAD · OMISSION CREATES ONE",
+      "ready": true,
+      "returned": 200,
+      "accepted": 200,
+      "groups": 18,
+      "balance": 0.011866612056235591,
+      "omissionRange": [
+        -0.036098881827873935,
+        0.10269721627169331
+      ],
+      "pivotal": 1,
+      "topShare": 0.36827257922886175,
+      "effective": 4.786115836077759,
+      "tagShare": 0.8222131360346566,
+      "newestEvent": "2026-10-23T20:08:00.000Z",
+      "asOf": "2026-10-24T14:43:04.498Z"
+    }
+  ],
+  "manifest": [
+    {
+      "file": "AAPL-raw.json",
+      "sha256": "9e4440f469df94a7e7432cb8cbc66de642ebffae93e7938567180292153ef7a9",
+      "records": 200,
+      "capturedAt": "2026-10-24T14:43:04.200Z"
+    },
+    {
+      "file": "CVX-raw.json",
+      "sha256": "7132766b41ef45db35a16c56e3f8125e0bd8800da436f930c6fb2a9ee83f2aab",
+      "records": 200,
+      "capturedAt": "2026-10-24T05:45:47.288Z"
+    },
+    {
+      "file": "JPM-raw.json",
+      "sha256": "24e722336d5a7046f1d193eee6d640e2acc727ac859bdef712b823795d21f6ef",
+      "records": 200,
+      "capturedAt": "2026-10-24T14:43:05.068Z"
+    },
+    {
+      "file": "NVDA-raw.json",
+      "sha256": "540fa923d2fc39bb31ff7148a4d48b40ef2892b3d56cdd0a76c0fb8c06457daa",
+      "records": 200,
+      "capturedAt": "2026-10-24T14:43:04.791Z"
+    },
+    {
+      "file": "TSLA-raw.json",
+      "sha256": "c3152324aa55fec593c31fac66e62e12d43a32696e52a3433d28702ce6e9274e",
+      "records": 200,
+      "capturedAt": "2026-10-24T14:43:04.498Z"
+    }
+  ]
+}
