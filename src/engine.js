@@ -17,6 +17,21 @@ function riftTag(riftTags) {
 function riftClass(riftBalance, riftThreshold) {
   return riftBalance === null ? null : riftBalance >= riftThreshold ? 1 : riftBalance <= -riftThreshold ? -1 : 0;
 }
+function riftIdentity(riftRecord, riftTicker) {
+  if (!riftRecord || typeof riftRecord !== 'object') return null;
+  const riftStamp = riftSeconds(riftRecord.timestamp);
+  const riftExpiry = riftSeconds(riftRecord.expDate);
+  const riftExpiryDay = riftExpiry === null ? null : Math.floor(riftExpiry / 86400);
+  const riftType = String(riftRecord.type || '').toUpperCase();
+  const riftRecordTicker = String(riftRecord.ticker || riftTicker).toUpperCase().trim();
+  const riftId = typeof riftRecord.id === 'string' && riftRecord.id.trim() ? riftRecord.id.trim() : null;
+  const riftBucket = riftTag(riftRecord.tags);
+  const riftFingerprint = JSON.stringify([riftStamp, riftExpiryDay, riftType,
+    riftNumber(riftRecord.strike) ? riftRecord.strike : null,
+    riftNumber(riftRecord.costBasis) ? riftRecord.costBasis : null, riftBucket, riftRecordTicker]);
+  return { stamp: riftStamp, expiry: riftExpiry, expiryDay: riftExpiryDay, type: riftType,
+    ticker: riftRecordTicker, id: riftId, bucket: riftBucket, fingerprint: riftFingerprint };
+}
 function calculateRift(riftRaw, riftOptions = {}) {
   const riftAsOf = riftOptions.asOf ?? Date.now();
   const riftTicker = String(riftOptions.ticker || '').toUpperCase().trim();
@@ -32,30 +47,38 @@ function calculateRift(riftRaw, riftOptions = {}) {
   const riftStart = riftAsOf / 1000 - riftDays * 86400;
   const riftRows = [];
   const riftIds = {};
+  // An unrelated old malformed row is outside this audit. But contradictory
+  // copies of a current event ID can make even its window membership ambiguous.
+  const riftIdentities = riftRaw.map(riftRecord => riftIdentity(riftRecord, riftTicker));
+  const riftIdentityVersions = {};
+  const riftCountedConflicts = {};
+  for (const riftIdentityRow of riftIdentities) {
+    if (riftIdentityRow?.id === null || !riftIdentityRow) continue;
+    const riftIdentityKey = 'id:' + riftIdentityRow.id;
+    if (!(riftIdentityKey in riftIdentityVersions)) riftIdentityVersions[riftIdentityKey] = { fingerprint: riftIdentityRow.fingerprint, conflict: false };
+    else if (riftIdentityVersions[riftIdentityKey].fingerprint !== riftIdentityRow.fingerprint) riftIdentityVersions[riftIdentityKey].conflict = true;
+  }
   for (let riftIndex = 0; riftIndex < riftRaw.length; riftIndex += 1) {
     const riftRecord = riftRaw[riftIndex];
-    if (!riftRecord || typeof riftRecord !== 'object') { riftAudit.invalid += 1; continue; }
-    const riftStamp = riftSeconds(riftRecord.timestamp);
-    const riftExpiry = riftSeconds(riftRecord.expDate);
-    const riftType = String(riftRecord.type || '').toUpperCase();
-    const riftRecordTicker = String(riftRecord.ticker || riftTicker).toUpperCase().trim();
-    if (riftStamp === null || riftExpiry === null || riftStamp > riftAsOf / 1000 ||
-      riftStamp < 946684800 || riftExpiry < riftStamp - 86400 || riftRecordTicker !== riftTicker ||
+    const riftIdentityRow = riftIdentities[riftIndex];
+    if (!riftIdentityRow) { riftAudit.invalid += 1; continue; }
+    const { stamp: riftStamp, expiry: riftExpiry, expiryDay: riftExpiryDay, type: riftType,
+      ticker: riftRecordTicker, id: riftId, bucket: riftBucket, fingerprint: riftFingerprint } = riftIdentityRow;
+    if (riftStamp === null || riftStamp < 946684800 || riftStamp > riftAsOf / 1000) { riftAudit.invalid += 1; continue; }
+    if (riftStamp < riftStart) { riftAudit.outside += 1; continue; }
+    if (riftId !== null && riftIdentityVersions['id:' + riftId].conflict) {
+      if (!riftCountedConflicts['id:' + riftId]) { riftAudit.conflicts += 1; riftCountedConflicts['id:' + riftId] = true; }
+      continue;
+    }
+    if (riftExpiry === null || riftExpiry < riftStamp - 86400 || riftRecordTicker !== riftTicker ||
       !['CALL','PUT'].includes(riftType) || !riftNumber(riftRecord.strike) || riftRecord.strike <= 0 ||
       !riftNumber(riftRecord.costBasis) || riftRecord.costBasis <= 0) { riftAudit.invalid += 1; continue; }
-    if (riftStamp < riftStart) { riftAudit.outside += 1; continue; }
-    const riftExpiryDay = Math.floor(riftExpiry / 86400);
-    const riftId = typeof riftRecord.id === 'string' && riftRecord.id.trim() ? riftRecord.id.trim() : null;
-    const riftBucket = riftTag(riftRecord.tags);
     const riftContract = riftTicker + '|' + riftExpiryDay + '|' + riftType + '|' + riftRecord.strike;
-    const riftFingerprint = [riftStamp, riftExpiryDay, riftType, riftRecord.strike, riftRecord.costBasis, riftBucket, riftRecordTicker].join('|');
     const riftRow = { id: riftId, timestamp: riftStamp, expiryDay: riftExpiryDay, contract: riftContract,
       expiryLabel: String(riftRecord.expDateFormatted || ('expiry day ' + riftExpiryDay)),
       type: riftType, strike: riftRecord.strike, premium: riftRecord.costBasis, bucket: riftBucket, fingerprint: riftFingerprint, conflict: false };
     if (riftId !== null && ('id:' + riftId) in riftIds) {
-      const riftPrior = riftIds['id:' + riftId];
-      if (riftPrior.fingerprint === riftFingerprint && !riftPrior.conflict) riftAudit.duplicates += 1;
-      else { riftPrior.conflict = true; riftAudit.conflicts += 1; }
+      riftAudit.duplicates += 1;
       continue;
     }
     if (riftId !== null) riftIds['id:' + riftId] = riftRow;

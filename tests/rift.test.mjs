@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs/promises';import vm from 'node:vm';
 const engine=await fs.readFile(new URL('../src/engine.js',import.meta.url),'utf8');
 const presentation=await fs.readFile(new URL('../src/presentation.js',import.meta.url),'utf8');
-const {calculateRift,buildRiftOverlay}=vm.runInNewContext(engine+'\n'+presentation+'\n({calculateRift,buildRiftOverlay})');
+const {calculateRift,buildRiftOverlay,riftDisplayRows}=vm.runInNewContext(engine+'\n'+presentation+'\n({calculateRift,buildRiftOverlay,riftDisplayRows})');
 const now=Date.UTC(2026,9,24,12),sec=now/1000;
 const opts={ticker:'TEST',asOf:now,days:7,threshold:0.1};
 function row(id,premium,tag,strike=100,expiry=Date.UTC(2026,10,20)/1000){return{id,ticker:'TEST',timestamp:sec-3600,costBasis:premium,strike,type:'CALL',expDate:expiry,expDateFormatted:'20 Nov\'26',tags:[tag]};}
@@ -75,4 +75,26 @@ test('native adapter uses only included UOA and latest-bar-only scan conditions'
  const ctx={Date:{now:()=>now},input,current:{ticker:'TEST',assetType:'stock'},close:Array(80).fill(5),describe_indicator:()=>{},request:{unusual_options:async(...a)=>{calls.push(a);return fixture();}},register_signal:(s,n)=>signals.push({s,n}),paint_overlay:()=>{}};
  await vm.runInNewContext('(async()=>{'+engine+presentation+adapter+'})()',ctx);
  assert.equal(calls.length,1);assert.equal(signals.length,3);signals.forEach(({s})=>{assert.ok(s.slice(0,-1).every(x=>x===null));assert.ok([0,1].includes(s.at(-1)));});
+});
+test('unrelated malformed old records do not poison the requested window',()=>{
+ const r=fixture(),before=calculateRift(r,opts);
+ r.push({...row('old',100,'bullish'),timestamp:sec-8*86400,costBasis:'bad',type:null});
+ const m=calculateRift(r,opts);assert.equal(m.audit.outside,1);assert.equal(m.audit.invalid,0);assert.equal(m.ready,true);close(m.balance,before.balance);
+});
+test('conflicting event IDs across window boundaries stay ambiguous, but old-only conflicts stay outside',()=>{
+ const r=fixture();r.push({...r[0],timestamp:sec-8*86400});const m=calculateRift(r,opts);
+ assert.equal(m.audit.outside,1);assert.equal(m.audit.conflicts,1);assert.equal(m.audit.accepted,11);assert.equal(m.ready,false);
+ const s=fixture();s.push({...row('old',100,'bullish'),timestamp:sec-8*86400},{...row('old',300,'bearish'),timestamp:sec-9*86400});
+ const n=calculateRift(s,opts);assert.equal(n.audit.conflicts,0);assert.equal(n.audit.outside,2);assert.equal(n.ready,true);
+ const u=fixture();u.push({...u[0],costBasis:'bad'});const q=calculateRift(u,opts);assert.equal(q.audit.conflicts,1);assert.equal(q.audit.accepted,11);assert.equal(q.ready,false);
+});
+test('both layouts expose decisive omissions even when all five largest groups preserve the lead',()=>{
+ const r=[];for(let i=0;i<5;i++)r.push(row('b'+i,150,'bullish',100+i),row('r'+i,150,'bearish',100+i));
+ r.push(row('p1',150,'bullish',110),row('p2',150,'bullish',111),row('small-b',25,'bullish',120),row('small-r',75,'bearish',120));
+ const m=calculateRift(r,opts);assert.equal(m.ready,true);close(m.balance,250/1900);assert.equal(m.pivotal,2);
+ assert.ok(m.scenarios.slice(0,5).every(s=>s.lead===m.lead));
+ for(const [compact,limit] of [[true,3],[false,5]]){
+  const rows=riftDisplayRows(m,limit);assert.ok(rows.some(x=>x.changesLead));assert.ok(rows.some(x=>Math.abs(x.scenario.balance-m.low)<1e-12));assert.ok(rows.some(x=>Math.abs(x.scenario.balance-m.high)<1e-12));assert.ok(rows.some(x=>x.group.key===m.groups[0].key));
+  const display=JSON.stringify(buildRiftOverlay(m,{compact}));assert.match(display,/LOW\*/);assert.match(display,/\+5.7 pp/);
+ }
 });

@@ -9,7 +9,7 @@ Form: https://docs.google.com/forms/d/e/1FAIpQLSdOi84k_GXCS3h-YxDqruye0uGAi6cqte
 
 ## Short description
 
-Rift tests whether an options-flow headline depends on one contract or expiry. It groups the returned unusual-options reports, omits each group separately, and shows the range of provider-tagged premium balances. A ranked omission table and premium-equivalent breadth make concentration explicit. Neutral and unclassified premium remain in the denominator; calls are never assumed bullish. Identical event IDs count once, while data-quality limits and older samples suppress current-sample scan conditions. This is a potentially truncated selected sample, not complete market flow, trader intent, a price forecast or historical strategy. #TSBuild26
+Rift tests whether an options-flow headline depends on one contract or expiry. It groups the returned unusual-options reports, omits each group separately, and shows the range of provider-tagged premium balances. The table exposes the largest group and both range endpoints, with stars marking omissions that change the material lead. Neutral and unclassified premium remain in the denominator; calls are never assumed bullish. Identical event IDs count once, while data-quality limits and older samples suppress current-sample scan conditions. This is a potentially truncated selected sample, not complete market flow, trader intent, a price forecast or historical strategy. #TSBuild26
 
 ## Publication gate
 

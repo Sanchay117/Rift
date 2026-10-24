@@ -21,6 +21,21 @@ function riftTag(riftTags) {
 function riftClass(riftBalance, riftThreshold) {
   return riftBalance === null ? null : riftBalance >= riftThreshold ? 1 : riftBalance <= -riftThreshold ? -1 : 0;
 }
+function riftIdentity(riftRecord, riftTicker) {
+  if (!riftRecord || typeof riftRecord !== 'object') return null;
+  const riftStamp = riftSeconds(riftRecord.timestamp);
+  const riftExpiry = riftSeconds(riftRecord.expDate);
+  const riftExpiryDay = riftExpiry === null ? null : Math.floor(riftExpiry / 86400);
+  const riftType = String(riftRecord.type || '').toUpperCase();
+  const riftRecordTicker = String(riftRecord.ticker || riftTicker).toUpperCase().trim();
+  const riftId = typeof riftRecord.id === 'string' && riftRecord.id.trim() ? riftRecord.id.trim() : null;
+  const riftBucket = riftTag(riftRecord.tags);
+  const riftFingerprint = JSON.stringify([riftStamp, riftExpiryDay, riftType,
+    riftNumber(riftRecord.strike) ? riftRecord.strike : null,
+    riftNumber(riftRecord.costBasis) ? riftRecord.costBasis : null, riftBucket, riftRecordTicker]);
+  return { stamp: riftStamp, expiry: riftExpiry, expiryDay: riftExpiryDay, type: riftType,
+    ticker: riftRecordTicker, id: riftId, bucket: riftBucket, fingerprint: riftFingerprint };
+}
 function calculateRift(riftRaw, riftOptions = {}) {
   const riftAsOf = riftOptions.asOf ?? Date.now();
   const riftTicker = String(riftOptions.ticker || '').toUpperCase().trim();
@@ -36,30 +51,38 @@ function calculateRift(riftRaw, riftOptions = {}) {
   const riftStart = riftAsOf / 1000 - riftDays * 86400;
   const riftRows = [];
   const riftIds = {};
+  // An unrelated old malformed row is outside this audit. But contradictory
+  // copies of a current event ID can make even its window membership ambiguous.
+  const riftIdentities = riftRaw.map(riftRecord => riftIdentity(riftRecord, riftTicker));
+  const riftIdentityVersions = {};
+  const riftCountedConflicts = {};
+  for (const riftIdentityRow of riftIdentities) {
+    if (riftIdentityRow?.id === null || !riftIdentityRow) continue;
+    const riftIdentityKey = 'id:' + riftIdentityRow.id;
+    if (!(riftIdentityKey in riftIdentityVersions)) riftIdentityVersions[riftIdentityKey] = { fingerprint: riftIdentityRow.fingerprint, conflict: false };
+    else if (riftIdentityVersions[riftIdentityKey].fingerprint !== riftIdentityRow.fingerprint) riftIdentityVersions[riftIdentityKey].conflict = true;
+  }
   for (let riftIndex = 0; riftIndex < riftRaw.length; riftIndex += 1) {
     const riftRecord = riftRaw[riftIndex];
-    if (!riftRecord || typeof riftRecord !== 'object') { riftAudit.invalid += 1; continue; }
-    const riftStamp = riftSeconds(riftRecord.timestamp);
-    const riftExpiry = riftSeconds(riftRecord.expDate);
-    const riftType = String(riftRecord.type || '').toUpperCase();
-    const riftRecordTicker = String(riftRecord.ticker || riftTicker).toUpperCase().trim();
-    if (riftStamp === null || riftExpiry === null || riftStamp > riftAsOf / 1000 ||
-      riftStamp < 946684800 || riftExpiry < riftStamp - 86400 || riftRecordTicker !== riftTicker ||
+    const riftIdentityRow = riftIdentities[riftIndex];
+    if (!riftIdentityRow) { riftAudit.invalid += 1; continue; }
+    const { stamp: riftStamp, expiry: riftExpiry, expiryDay: riftExpiryDay, type: riftType,
+      ticker: riftRecordTicker, id: riftId, bucket: riftBucket, fingerprint: riftFingerprint } = riftIdentityRow;
+    if (riftStamp === null || riftStamp < 946684800 || riftStamp > riftAsOf / 1000) { riftAudit.invalid += 1; continue; }
+    if (riftStamp < riftStart) { riftAudit.outside += 1; continue; }
+    if (riftId !== null && riftIdentityVersions['id:' + riftId].conflict) {
+      if (!riftCountedConflicts['id:' + riftId]) { riftAudit.conflicts += 1; riftCountedConflicts['id:' + riftId] = true; }
+      continue;
+    }
+    if (riftExpiry === null || riftExpiry < riftStamp - 86400 || riftRecordTicker !== riftTicker ||
       !['CALL','PUT'].includes(riftType) || !riftNumber(riftRecord.strike) || riftRecord.strike <= 0 ||
       !riftNumber(riftRecord.costBasis) || riftRecord.costBasis <= 0) { riftAudit.invalid += 1; continue; }
-    if (riftStamp < riftStart) { riftAudit.outside += 1; continue; }
-    const riftExpiryDay = Math.floor(riftExpiry / 86400);
-    const riftId = typeof riftRecord.id === 'string' && riftRecord.id.trim() ? riftRecord.id.trim() : null;
-    const riftBucket = riftTag(riftRecord.tags);
     const riftContract = riftTicker + '|' + riftExpiryDay + '|' + riftType + '|' + riftRecord.strike;
-    const riftFingerprint = [riftStamp, riftExpiryDay, riftType, riftRecord.strike, riftRecord.costBasis, riftBucket, riftRecordTicker].join('|');
     const riftRow = { id: riftId, timestamp: riftStamp, expiryDay: riftExpiryDay, contract: riftContract,
       expiryLabel: String(riftRecord.expDateFormatted || ('expiry day ' + riftExpiryDay)),
       type: riftType, strike: riftRecord.strike, premium: riftRecord.costBasis, bucket: riftBucket, fingerprint: riftFingerprint, conflict: false };
     if (riftId !== null && ('id:' + riftId) in riftIds) {
-      const riftPrior = riftIds['id:' + riftId];
-      if (riftPrior.fingerprint === riftFingerprint && !riftPrior.conflict) riftAudit.duplicates += 1;
-      else { riftPrior.conflict = true; riftAudit.conflicts += 1; }
+      riftAudit.duplicates += 1;
       continue;
     }
     if (riftId !== null) riftIds['id:' + riftId] = riftRow;
@@ -137,6 +160,30 @@ function riftMoney(riftValue) {
 function riftLeadText(riftLead) {
   return riftLead === 1 ? 'Bullish-tagged lead' : riftLead === -1 ? 'Bearish-tagged lead' : 'No material tagged lead';
 }
+function riftDisplayRows(riftModel, riftLimit) {
+  if (!riftModel.groups.length) return [];
+  const riftLowCase = riftModel.scenarios.find(riftCase => riftCase.balance !== null && Math.abs(riftCase.balance - riftModel.low) < 1e-12);
+  const riftHighCase = riftModel.scenarios.find(riftCase => riftCase.balance !== null && Math.abs(riftCase.balance - riftModel.high) < 1e-12);
+  const riftKeys = [];
+  const riftAdd = riftKey => { if (riftKey !== undefined && !riftKeys.includes(riftKey) && riftKeys.length < riftLimit) riftKeys.push(riftKey); };
+  riftAdd(riftModel.groups[0].key);
+  riftAdd(riftLowCase?.key);
+  riftAdd(riftHighCase?.key);
+  const riftInfluence = [...riftModel.scenarios].sort((riftA, riftB) =>
+    (riftB.balance === null ? -1 : Math.abs(riftB.balance - riftModel.balance)) -
+    (riftA.balance === null ? -1 : Math.abs(riftA.balance - riftModel.balance)) || riftB.share - riftA.share || riftA.key.localeCompare(riftB.key));
+  riftInfluence.forEach(riftCase => riftAdd(riftCase.key));
+  return riftKeys.map(riftKey => {
+    const riftGroup = riftModel.groups.find(riftItem => riftItem.key === riftKey);
+    const riftScenario = riftModel.scenarios.find(riftItem => riftItem.key === riftKey);
+    const riftRoles = [];
+    if (riftKey === riftModel.groups[0].key) riftRoles.push('TOP');
+    if (riftKey === riftLowCase?.key) riftRoles.push('LOW');
+    if (riftKey === riftHighCase?.key) riftRoles.push('HIGH');
+    return { group: riftGroup, scenario: riftScenario, role: riftRoles.join('/') || 'IMPACT',
+      changesLead: riftScenario.lead !== null && riftScenario.lead !== riftModel.lead };
+  });
+}
 function buildRiftOverlay(riftModel,riftView={}) {
   const riftP=RIFT_PALETTES[riftView.theme]||RIFT_PALETTES.Ink;
   const riftCompact=riftView.compact===true;
@@ -155,7 +202,7 @@ function buildRiftOverlay(riftModel,riftView={}) {
     riftRows.push(riftRow(riftEscape(riftModel.message),{padding:'12px',fontSize:'12px'}));
   }else{
     const riftAge=riftModel.ageHours<1?Math.round(riftModel.ageHours*60)+'m':riftModel.ageHours.toFixed(1)+'h';
-    riftRows.push(riftRow(riftModel.audit.accepted+' reports · '+riftModel.contractCount+' contracts · '+riftModel.days+'d lookback · newest event '+riftAge+' old',{fontSize:'10px',color:riftP.muted,paddingTop:0,paddingBottom:'5px'}));
+    riftRows.push(riftRow('Sample: '+riftModel.audit.accepted+' reports · '+riftModel.contractCount+' contracts · '+riftModel.days+'d filter · newest '+riftAge+' old',{fontSize:'10px',color:riftP.muted,paddingTop:0,paddingBottom:'5px'}));
     const riftHero=(riftLabel,riftValue,riftDetail,riftValueColor,riftColWidth)=>({width:riftColWidth,padding:'5px 8px',backgroundColor:riftP.card,table:{width:'100%',rows:[
       {cells:[{text:riftLabel,color:riftP.muted,fontSize:'10px',lineHeight:'13px',padding:0}]},
       {cells:[{text:riftValue,color:riftValueColor,fontSize:'26px',lineHeight:'31px',padding:0}]},
@@ -182,17 +229,18 @@ function buildRiftOverlay(riftModel,riftView={}) {
     ]}]});
     riftRows.push({cells:[{padding:'0 12px',table:riftMix(riftModel.total,riftModel.bull,riftModel.bear,riftModel.other)}]});
     riftRows.push(riftRow('Tagged premium: '+(riftModel.bull/riftModel.total*100).toFixed(0)+'% bullish · '+(riftModel.other/riftModel.total*100).toFixed(0)+'% other · '+(riftModel.bear/riftModel.total*100).toFixed(0)+'% bearish · '+riftMoney(riftModel.total)+' total',{fontSize:'10px',color:riftP.muted,paddingBottom:'5px'}));
-    const riftTop=riftModel.groups.slice(0,riftCompact?3:5);
+    const riftTop=riftDisplayRows(riftModel,riftCompact?3:5);
     riftRows.push({cells:[{padding:'0 12px',table:{width:'100%',borderCollapse:'collapse',rows:[
       {cells:[riftCell('OMIT ONE '+riftModel.grouping.toUpperCase(),{fontSize:'9px',color:riftP.muted,padding:'3px 0',borderTop:'1px solid '+riftP.border,width:'45%'}),riftCell('PREMIUM SHARE',{fontSize:'9px',color:riftP.muted,padding:'3px 4px',borderTop:'1px solid '+riftP.border,textAlign:'right',width:'25%'}),riftCell('BALANCE WITHOUT',{fontSize:'9px',color:riftP.muted,padding:'3px 0',borderTop:'1px solid '+riftP.border,textAlign:'right',width:'30%'})]},
-      ...riftTop.map(riftGroup=>{const riftScenario=riftModel.scenarios.find(riftItem=>riftItem.key===riftGroup.key);return{cells:[
-        riftCell(riftEscape(riftGroup.label),{padding:'3px 0',fontSize:'11px'}),
+      ...riftTop.map(({group:riftGroup,scenario:riftScenario,role:riftRole,changesLead:riftChangesLead})=>{return{cells:[
+        riftCell('<b>'+riftRole+(riftChangesLead?'*':'')+'</b> · '+riftEscape(riftGroup.label),{padding:'3px 0',fontSize:'11px'}),
         riftCell((riftGroup.share*100).toFixed(1)+'%',{padding:'3px 4px',textAlign:'right',color:riftP.muted}),
         riftCell(riftPp(riftScenario.balance)+' pp',{padding:'3px 0',textAlign:'right',color:riftColor(riftScenario.balance)})
       ]};})
     ]}}]});
+    riftRows.push(riftRow('TOP: largest group · LOW/HIGH: range endpoints · * changes the material lead',{fontSize:'9px',color:riftP.muted,paddingTop:'1px',paddingBottom:'3px'}));
     riftRows.push(riftRow(riftModel.pivotal+' / '+riftModel.groups.length+' omissions change the material lead · '+riftModel.effective.toFixed(1)+' premium-equivalent '+(riftModel.grouping==='Expiry'?'expiries':'contracts'),{fontSize:'10px',color:riftP.muted,backgroundColor:riftP.card,padding:'5px 12px'}));
-    riftRows.push(riftRow('Returned '+riftModel.audit.returned+' · outside window '+riftModel.audit.outside+' · invalid '+riftModel.audit.invalid+' · duplicate IDs '+riftModel.audit.duplicates+' · conflicts '+riftModel.audit.conflicts+' · no ID '+riftModel.audit.unidentified,{fontSize:'9px',color:riftP.muted,paddingBottom:0}));
+    riftRows.push(riftRow('Returned '+riftModel.audit.returned+' · outside window '+riftModel.audit.outside+' · invalid '+riftModel.audit.invalid+' · duplicate copies '+riftModel.audit.duplicates+' · conflicting IDs '+riftModel.audit.conflicts+' · no ID '+riftModel.audit.unidentified,{fontSize:'9px',color:riftP.muted,paddingBottom:0}));
   }
   riftRows.push(riftRow('Balance = (bullish-tagged − bearish-tagged premium) ÷ all accepted premium.<br/>Provider-selected sample; may truncate. Tags ≠ trader intent. No full chain, forecast or historical signals.',{fontSize:'9px',lineHeight:'12px',color:riftP.muted,paddingTop:'2px',paddingBottom:'6px'}));
   return{width:riftWidth+'px',backgroundColor:riftP.bg,color:riftP.text,fontFamily:'Arial,sans-serif',lineHeight:'14px',border:'1px solid '+riftP.border,borderRadius:'8px',borderSpacing:0,borderCollapse:'separate',rows:riftRows};

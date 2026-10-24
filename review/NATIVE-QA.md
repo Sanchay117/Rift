@@ -1,6 +1,6 @@
 # Rift native validation · October 24, 2026
 
-Production build **1.0.0**, **19,378 bytes**, SHA256 `f4dabf0a23e64861542c454b0b9752f786795469ab0afd58d218bb5095df87c4`.
+Production build **1.1.0**, **22,750 bytes**, SHA256 `1aa909fa35c9fd4dfe773d8b939c567fb9d551d02b63db139ff90f0689b2b9d7`.
 
 ## Native save and rendering
 
@@ -10,9 +10,9 @@ An older private QA copy is retained under the distinct name **Rift - Native QA 
 
 | Native case | Verified result | Evidence |
 | --- | --- | --- |
-| CVX, Ink/Compact/Contract | −3.1 pp baseline; omission range −10.3…+3.7 pp; one of 92 contract omissions changes the three-way threshold state. | `screenshots/native-cvx-compact.png` (before the final cosmetic marker-label wording) |
-| NVDA, Ink/Compact/Contract | +12.4 pp baseline; +6.4…+15.6 pp range; 3 / 87 omissions remove the +10 pp material lead. The 220 call expiring November 20 is shown at +6.4 pp without that contract. | `screenshots/native-nvda-contract.png` |
-| NVDA, Paper/Full/Expiry | Same +12.4 pp baseline and $11.91M accepted premium. +8.1…+20.4 pp range; 2 / 19 expiry omissions change the lead. Five expiry rows render clearly. | `screenshots/native-nvda-paper-expiry.png` |
+| CVX, Ink/Compact/Contract | −3.1 pp baseline; omission range −10.3…+3.7 pp; one of 92 contract omissions changes the three-way threshold state. | `screenshots/native-cvx-compact.png` (v1.0 historical evidence; unchanged sample arithmetic) |
+| NVDA, Ink/Compact/Contract, v1.1 | +12.4 pp baseline; +6.4…+15.6 pp range; 3 / 87 omissions remove the +10 pp material lead. TOP, LOW* and HIGH rows are visible, including the 220 call expiring November 20 at +6.4 pp without that contract. | `screenshots/native-nvda-contract.png` |
+| NVDA, Paper/Full/Expiry, v1.1 | Same +12.4 pp baseline and $11.91M accepted premium. +8.1…+20.4 pp range; 2 / 19 expiry omissions change the lead. TOP/HIGH, LOW* and remaining impact rows render clearly with the role legend. | `screenshots/native-nvda-paper-expiry.png` |
 
 The native omission ruler and sample tick were visually checked. Both palettes were tested on the current dark price-chart background. A complete native light-chart background switch was not tested. Full and Compact fit the normal chart panel; an actual Store publication preview has not been configured yet.
 
@@ -24,10 +24,11 @@ The companion is saved privately as **Rift - Current Sample Dependence**, with n
 
 ## Numerical and local checks
 
-- All **15 automated tests passed**, including hand-worked balances and omission ranges, contract/expiry grouping, neutral denominators, duplicate/conflicting IDs, unit normalization, invalid/future data, staleness, one-group and tied-group cases, scaling/permutation invariance, escaping and native adapter topology.
+- All **18 automated tests passed**, including hand-worked balances and omission ranges, contract/expiry grouping, neutral denominators, duplicate/conflicting IDs across window boundaries, unit normalization, invalid/future data, staleness, one-group and tied-group cases, scaling/permutation invariance, escaping, decisive-row visibility and native adapter topology.
 - **Five real native captures**, 200 records each: CVX, AAPL, TSLA, NVDA, JPM. Both groupings produce ten audited views. `tools/qa.mjs` independently removes each group from the raw reports and recomputes its balance, then compares with the engine's direct omission formula.
 - Source capture timestamps, event times, hashes and summary values are in `validation.json`. Local raw API responses are ignored by Git. The generated local preview contains aggregated models, not a live external feed.
 - The local preview was visually checked in Ink/Compact/Contract and Paper/Full/Expiry. It uses the production table specification and a separate SVG ruler. Evidence: `screenshots/local-nvda-ink.png`.
+- The separate read-only review directly recomputed all **553 omissions**, checked current source against the generated artifact, and verified both v1.1 fixes. It found no remaining mathematical blocker. See `INDEPENDENT-REVIEW.md` for the limits of that conclusion.
 
 ## Scope and status
 

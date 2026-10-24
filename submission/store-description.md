@@ -4,7 +4,7 @@ Does the options-flow headline survive losing one contract?
 
 Rift audits concentration in the unusual-options reports returned by TrendSpider. It groups all reports for each contract, removes each contract separately, and shows the range of resulting provider-tagged premium balances. Switch to Expiry to test whether several apparently different contracts depend on one expiration.
 
-The headline balance is (bullish-tagged premium minus bearish-tagged premium) divided by all accepted premium, including neutral or unclassified reports. The ruler compares that balance with every one-group omission. The table identifies the largest groups and the balance without each; premium-equivalent breadth summarizes concentration without pretending to count independent traders.
+The headline balance is (bullish-tagged premium minus bearish-tagged premium) divided by all accepted premium, including neutral or unclassified reports. The ruler compares that balance with every one-group omission. Both layouts show the largest group and the groups setting the low/high endpoints; a star marks omissions that change the material lead. Premium-equivalent breadth summarizes concentration without pretending to count independent traders.
 
 A material lead defaults to ±10 percentage points and is adjustable. For example, a +12.4-point tagged lead that drops to +6.4 after one omission is sensitive to that contract at the stated threshold. The tool turns a flow headline into a concrete research question before you give it weight.
 
