@@ -20,7 +20,9 @@ The native omission ruler and sample tick were visually checked. Both palettes w
 
 A new **Daily** scanner used **Rift → Sample lead changes when one group is omitted → (last) → Signal active**, with Paper/Full/**Expiry**/7-day/10-pp inputs, over **S&P 100 Index**. The completed scan included **NVDA**, matching its chart and fixture calculation. Other results are provider-sample filters, not individually audited financial conclusions or recommended trades.
 
-The companion is saved privately as **Rift - Current Sample Dependence**, with no schedule enabled. Evidence: `screenshots/native-sp100-scan.png`. Only this condition was run end to end natively; the adapter test checks all three registered output arrays and confirms that every historical element is null.
+The companion is saved privately as **Rift - Current Sample Dependence**, with no schedule enabled. Evidence: `screenshots/native-sp100-scan.png` is the earlier v1.0 successful run. Only this condition completed end to end natively; the adapter test checks all three registered output arrays and confirms that every historical element is null.
+
+**v1.1 repeat limitation:** an S&P 100 repeat and a separate Recently viewed run both ended with TrendSpider's `scan_timeout`. See `screenshots/native-scan-timeout.png` for the latter. The cause has not been isolated; successful chart rendering and passing adapter-array tests do not establish reliable native batch execution. The saved S&P 100 scanner definition was restored after the temporary scope test. Batch scanning is unresolved and must not be represented as fully verified.
 
 ## Numerical and local checks
 

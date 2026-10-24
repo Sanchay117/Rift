@@ -39,6 +39,7 @@ Ink/Paper palettes and Compact/Full layouts are available. The default compact c
 - Invalid records, conflicting or missing IDs, fewer than 10 accepted reports, fewer than 3 groups, under 50% classified premium, or a newest event older than 36 hours suppress current conditions. The older-sample limit applies on weekends as well; the display remains labeled with event age.
 - Provider tags do not establish initiator, intent, opening versus closing, or whether several reports are parts of one order. Omission is a concentration sensitivity test, not a simulation of executing or reversing a trade. Past-expiry reports can legitimately appear in the historical sample; they are not current open positions.
 - Three scanner conditions populate only the latest chart bar. All prior bars are null. Use **Signal active** on the last bar for the current returned sample; there is no historical event series or point-in-time backtest.
+- Native batch-scanner reliability remains unresolved: an earlier S&P 100 run completed, but v1.1 repeat runs on S&P 100 and Recently viewed ended with TrendSpider's `scan_timeout`. The chart renders successfully; the cause of the scanner timeouts has not been isolated. Do not treat the companion scanner as fully verified or promise reliable batch execution.
 
 ## Validation
 

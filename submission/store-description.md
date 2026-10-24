@@ -10,7 +10,7 @@ A material lead defaults to ±10 percentage points and is adjustable. For exampl
 
 Data scope matters: this is a provider-selected, potentially truncated sample within a trailing calendar-day window, not complete market flow or current open positions. Repeated identical event IDs count once; conflicting copies are excluded. Missing or contradictory tags stay unclassified. CALL does not mean bullish, and gross reported premium is not net buying. Tags do not establish initiator, intent, opening/closing or related multi-leg orders.
 
-Three current-sample conditions support research scans. Invalid/ambiguous records, missing IDs, small samples, insufficient classified premium or a newest event over 36 hours old suppress those conditions. Only the latest bar is populated; there are no historical signals or point-in-time backtests.
+Three latest-bar conditions are included for scanner experimentation. Batch-scanner reliability is not verified: repeat native checks hit TrendSpider's scan timeout. Invalid/ambiguous records, missing IDs, small samples, insufficient classified premium or a newest event over 36 hours old suppress those conditions. There are no historical signals or point-in-time backtests.
 
 Ink/Paper palettes and Compact/Full layouts. Uses the included unusual-options endpoint verified on the development account; no full-chain OPRA request is made. Free and open source under MIT. Built for Most Unique Options Indicator. No price forecast or buy/sell recommendation. #TSBuild26
 

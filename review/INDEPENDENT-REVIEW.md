@@ -22,8 +22,8 @@ The user requested a subagent review. A separate read-only agent reviewed calcul
 | Rubric criterion | Reviewer's conservative assessment |
 | --- | --- |
 | Options Insight, 60% | **2/3**: useful, distinct diagnostic; the opaque, potentially truncated selected sample limits the market insight. |
-| Execution, 40% | **2–3/3**, conditional on final native and Store preview quality. |
-| Weighted range | **2.0–2.4/3**, subjective judgment, not predicted judges' scores. |
+| Execution, 40% | **2/3**, revised after the parent's native batch-scan timeouts. The initial conditional range was 2–3/3. |
+| Weighted assessment | **2.0/3**, subjective judgment, not a predicted judges' score. |
 
 The reviewer considers v1.1 submission-worthy after the final publication checks. First-place percentage odds are not defensible without the complete field and judges' assessments. No first-place-favorite claim is supported.
 
@@ -32,3 +32,5 @@ The reviewer checked primary Store descriptions for [CascadeQuant](https://trend
 ## Remaining steps
 
 Configure and verify a compact Store preview showing the decisive rows and explanatory footer; publish free with visible source and #TSBuild26; verify the public listing before the user completes the separate category-two form. Rift remains private and unsubmitted at this review checkpoint.
+
+After the initial independent verdict, the parent's v1.1 native repeat scans on S&P 100 and Recently viewed both returned `scan_timeout`. This narrows the execution evidence: chart rendering is verified, but current batch-scanner reliability is unresolved. The earlier v1.0 completed scan is historical evidence, not a v1.1 batch pass. The reviewer was informed and revised Execution to 2/3 and the weighted assessment to 2.0/3, while retaining the conclusion that the core on-chart audit is submission-worthy. Scanning must be treated as experimental; the prepared Store copy now discloses the limitation rather than promising reliable scanning.
